@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/admin" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/bootstrap" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/bootstrap-responsive.css" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/bootstrap-responsive.min.css" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/bootstrap.css" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/bootstrap.min.css" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/csrf.js" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/img" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/prettyPhoto.css" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/sequence.css" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/templatetags/__init__.py" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/templatetags/myapp_tags.py" charset="windows-1253" />
+  </component>
+</project>

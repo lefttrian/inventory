@@ -1,4 +1,4 @@
-#!c:\users\ltriantafyllou\grantex.gr\μηχανογραφηση - έγγραφα\pycharm projects\inventory\venv\scripts\python.exe
+#!C:\Users\ltriantafyllou\PycharmProjects\inventory\venv\Scripts\python.exe
 # When the django-admin.py deprecation ends, remove this script.
 import warnings
 

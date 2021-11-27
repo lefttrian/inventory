@@ -21,7 +21,7 @@ class StockFilter(django_filters.FilterSet):
         fields = {'Item__code': ['contains'], 'LocationCode': ['contains'], 'Store': ['exact']}
 
 
-class StockIndexView(generic.ListView, SingleTableMixin, FilterView):
+class StockIndexView(LoginRequiredMixin,generic.ListView, SingleTableMixin, FilterView):
     template_name = 'inventoryapp/stock_list.html'
     model = Stock
     table_class = StockTable

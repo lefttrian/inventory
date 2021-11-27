@@ -5,12 +5,19 @@
 
 
   <h1>Stock List</h1>
+<table width="100%">
+    <tr>
 {% if filter %}
+        <td>
     <form action="" method="get" class="form form-inline">
         {% bootstrap_form filter.form layout='inline' %}
-        {% bootstrap_button 'filter' %}
-    </form>
+        {% bootstrap_button 'Αναζήτηση' %}
+    </form></td>
 {% endif %}
+        <td>
+<button class="btn btn-success mr-0 ml-auto" onclick="location.href='{% url 'stockcreate'%}'">+  Προσθήκη</button></td>
+    </tr>
+    </table>
   <body>
   {% if table %}
     {% render_table table %}

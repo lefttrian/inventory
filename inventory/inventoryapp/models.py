@@ -18,7 +18,7 @@ class Item(models.Model):
 
 
 class Store(models.Model):
-    id = models.CharField(primary_key=True,max_length=50)
+    id = models.CharField(primary_key=True, max_length=50)
     code = models.CharField(max_length=25, unique=True)
     description = models.CharField(max_length=500)
 
@@ -35,7 +35,7 @@ class Stock(models.Model):
     Item = models.ForeignKey(Item, on_delete=models.DO_NOTHING)
     LocationCode = models.CharField(max_length=20)
     Quantity = models.FloatField()
-    Store = models.ForeignKey(Store, on_delete=models.DO_NOTHING)
+    Store = models.ForeignKey(Store, on_delete=models.DO_NOTHING, default='')
     InputDate = models.DateTimeField(null=False, default=datetime.now())
     InputUser = models.IntegerField(null=False)
 

@@ -9,6 +9,7 @@
     <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/bootstrap.min.css" charset="windows-1253" />
     <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/csrf.js" charset="windows-1253" />
     <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/img" charset="windows-1253" />
+    <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/img/icons/house.svg" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/prettyPhoto.css" charset="windows-1253" />
     <file url="file://$PROJECT_DIR$/inventory/inventoryapp/static/inventoryapp/sequence.css" charset="windows-1253" />
     <file url="file://$PROJECT_DIR$/inventory/inventoryapp/templatetags/__init__.py" charset="windows-1253" />

@@ -31,21 +31,22 @@ def userstores(request):
 
 
 class StockFilter(django_filters.FilterSet):
-    InputDate = DateRangeFilter()
+    InputDate = DateRangeFilter(label='Ημ/νία δημιουργίας')
     Store = ModelChoiceFilter(queryset=userstores,
                               required=False, label='Κατάστημα', empty_label=None)
 
     class Meta:
         model = Stock
-        fields = {'Item__code': ['contains'], 'LocationCode': ['contains'], 'Store': ['exact'], 'InputDate': []}
+        fields = {'Item__searchfield': ['contains'], 'Item__code': ['contains'], 'Store': ['exact'], 'InputDate': []}
 
     def __init__(self, *args, **kwargs):
         super(StockFilter, self).__init__(*args, **kwargs)
         if self.request.user.is_superuser:
             self.filters['Store'].extra['empty_label'] = '--------'
         else:
-            self.filters['Store'].extra['empty_label']  = None
-
+            self.filters['Store'].extra['empty_label'] = None
+        self.filters['Item__searchfield__contains'].field.label = 'w_search'
+        self.filters['Item__code__contains'].field.label = 'Κωδικός είδους'
 
 
 class StockIndexView(LoginRequiredMixin, SingleTableMixin, FilterView):
@@ -66,9 +67,15 @@ class StockDetailView(LoginRequiredMixin, UpdateView):
     template_name = "stock_detail.html"
 
     def get_success_url(self):
-        view_name = 'inventoryapp\stockdetail'
+        view_name = 'stockdetail'
         # No need for reverse_lazy here, because it's called inside the method
         return reverse(view_name, kwargs={'pk': self.object.id})
+
+    def get_form(self, *args, **kwargs):
+        form = super(StockDetailView, self).get_form(*args, **kwargs)
+        form.fields['Store'].queryset = Store.objects.filter(code__in=list(self.request.user.groups.all().values_list('id', flat=True)))
+        form.fields['LocationCode'].required = False
+        return form
 
 
 class StockDeleteView(LoginRequiredMixin, DeleteView):
@@ -84,8 +91,24 @@ class StockCreateView(LoginRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super(StockCreateView, self).get_form_kwargs()
-        kwargs['initial'] = {'InputUser': self.request.user.id, 'InputDate': datetime.now()}
+        kwargs['initial'] = {'InputUser': self.request.user.id, 'InputDate': datetime.now(), 'LocationCode': 'Άνευ'}
         return kwargs
+
+    def get_form(self, *args, **kwargs):
+        form = super(StockCreateView, self).get_form(*args, **kwargs)
+        form.fields['Store'].queryset = Store.objects.filter(code__in=list(self.request.user.groups.all().values_list('id', flat=True)))
+        form.fields['LocationCode'].required = False
+        return form
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            form.save()
+            if 'submitandnew' in request.POST:
+                return redirect('stockcreate')
+            else:
+                return redirect('index')
+        return render(request, 'inventoryapp/stock_form.html', {'form': form})
 
 
 class ItemAutocomplete(autocomplete.Select2QuerySetView):
@@ -97,7 +120,7 @@ class ItemAutocomplete(autocomplete.Select2QuerySetView):
         qs = Item.objects.all()
 
         if self.q:
-            qs = qs.filter(code__istartswith=self.q)
+            qs = qs.filter(searchfield__icontains=self.q)
 
         return qs
 

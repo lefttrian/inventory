@@ -3,15 +3,14 @@
 {% block content %}
 
   {% if form.errors %}
-    <p>Your username and password didn't match. Please try again.</p>
+    <p>Λάθος κωδικός ή όνομα χρήστη. Δοκιμάστε ξανά.</p>
   {% endif %}
 
   {% if next %}
     {% if user.is_authenticated %}
-      <p>Your account doesn't have access to this page. To proceed,
-      please login with an account that has access.</p>
+      <p>Ο λογαριασμός σας δεν έχει πρόσβαση σε αυτή τη σελίδα.</p>
     {% else %}
-      <p>Please login to see this page.</p>
+      <p>Συνδεθείτε για να δείτε τη σελίδα.</p>
     {% endif %}
   {% endif %}
 
@@ -27,7 +26,7 @@
         <td>{{ form.password }}</td>
       </tr>
     </table>
-    <input type="submit" value="login" />
+    <input type="submit" value="Σύνδεση"  class="btn btn-success d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3"/>
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
 

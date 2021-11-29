@@ -8,11 +8,15 @@
 <table width="100%">
     <tr>
 {% if filter %}
-        <td>
+        </tr>
+    Αναζητήστε χωρίς αστερίσκους
+    <tr>
+    <td>
     <form action="" method="get" class="form form-inline">
         {% bootstrap_form filter.form layout='inline' %}
         {% bootstrap_button 'Αναζήτηση' %}
-    </form></td>
+    </form>
+    </td>
 {% endif %}
         <td>
 <button class="btn btn-success mr-0 ml-auto" onclick="location.href='{% url 'stockcreate'%}'">+  Προσθήκη</button></td>

@@ -4,10 +4,11 @@
 <head>
       <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" >
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar sticky-top navbar-expand-lg navbar-dark bg-danger">
   <a class="navbar-brand" href="{% url 'index' %}">
-    Grantex Inventory App
+      <i class="fa fa-home" style="font-size: 1em;"> </i>  Grantex Inventory App
   </a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
@@ -15,12 +16,12 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     {% if request.user.is_authenticated %}
-        <form action="{% url 'logout' %}" class="form-inline mr-0 ml-auto" >
-            <table><tr><b>Χρήστης</b> <td></td><td>{{request.user.get_full_name}}</td><td><button class="btn btn-danger" type="submit" >Αποσύνδεση</button></td></tr></table>
+     <form action="{% url 'logout' %}" class="form-inline mr-0 ml-auto" >
+         <table><tr><td><span class="navbar-text"><b>Χρήστης:  </b></span> </td><td><span class="navbar-text">{{request.user.get_full_name}}</span></td><td><button class="btn btn-outline-warning d-none d-lg-inline-block mb-3 mb-md-0 ml-md-3" type="submit" >Αποσύνδεση</button></td></tr></table>
      </form>
      {% else %}
         <form action="{% url 'login' %}" class="form-inline mr-0 ml-auto" >
-        <button class="btn btn-success" type="submit" >Σύνδεση</button>
+        <button class="btn btn-outline-light" type="submit" >Σύνδεση</button>
     </form>
      {% endif %}
 

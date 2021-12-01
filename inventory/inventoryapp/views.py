@@ -4,6 +4,7 @@ import django_filters
 from dal import autocomplete
 from dal.widgets import Select
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.http import request
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
@@ -30,6 +31,16 @@ def userstores(request):
     return q
 
 
+def stockstoreopentouser(userid, stockid):
+    try:
+        if int(Stock.objects.get(pk=stockid).Store.code) in User.objects.get(id= userid).groups.all().values_list('id', flat=True):
+            return True
+        else:
+            return False
+    except:
+        return False
+
+
 class StockFilter(django_filters.FilterSet):
     InputDate = DateRangeFilter(label='Ημ/νία δημιουργίας')
     Store = ModelChoiceFilter(queryset=userstores,
@@ -41,7 +52,7 @@ class StockFilter(django_filters.FilterSet):
 
     def __init__(self, *args, **kwargs):
         super(StockFilter, self).__init__(*args, **kwargs)
-        if self.request.user.is_superuser:
+        if User.objects.get(id=self.request.user.id).groups.count() == Store.objects.count():
             self.filters['Store'].extra['empty_label'] = '--------'
         else:
             self.filters['Store'].extra['empty_label'] = None
@@ -80,12 +91,14 @@ class StockDetailView(LoginRequiredMixin, UpdateView):
 
     def post(self, request, *args, **kwargs):
         form = StockUpdateForm(request.POST, instance=Stock.objects.get(pk=self.kwargs['pk']))
-        if 'delete' in request.POST:
+        if not stockstoreopentouser(self.request.user.id, self.kwargs['pk']):
+            form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα στο κατάστημα του αποθέματος!")
+        elif 'delete' in request.POST:
             if self.request.user.has_perm('inventoryapp.delete_stock'):
                 return redirect('stockdelete', pk=self.kwargs['pk'])
             else:
                 form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα διαγραφής αποθέματος!")
-        if form.is_valid():
+        elif form.is_valid():
             if self.request.user.has_perm('inventoryapp.change_stock'):
                 form.save()
                 return redirect('stockdetail', pk=self.kwargs['pk'])

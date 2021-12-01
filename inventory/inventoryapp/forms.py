@@ -30,8 +30,7 @@ class StockUpdateForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field('Item'), Field('LocationCode', readonly=True, required=False, blank=True, default=' '), Field('Store'),
             Field('Quantity'), Field('InputDate', readonly=True), Field('InputUser', readonly=True),
-            Submit('submit', 'Ενημέρωση'),
-            Button('delete', 'Διαγραφή', css_class='btn btn-danger', onclick='location.href=\''+reverse_lazy('stockdelete', kwargs={'pk': kwargs['instance'].pk})+'\';')
+            ButtonHolder(Submit('submit', 'Ενημέρωση'), Submit('delete', 'Διαγραφή', css_class='btn btn-danger'))
         )
 
 
@@ -55,6 +54,6 @@ class StockCreateForm(forms.ModelForm):
         self.helper.layout = Layout(
             Field('Item'), Field('LocationCode', readonly=True, required=False, blank=True, default=' '), Field('Store'),
             Field('Quantity'), Field('InputDate', readonly=True, type="hidden"), Field('InputUser', readonly=True, type="hidden"),
-            ButtonHolder(Submit('submit', 'Αποθήκευση', css_class='btn btn-success'),
-                         Submit('submitandnew', 'Αποθήκευση και προσθήκη νέου', css_class='btn btn-success'))
+            ButtonHolder(Submit('submit', 'Αποθήκευση', css_class='btn btn-success', readonly=False),
+                         Submit('submitandnew', 'Αποθήκευση και προσθήκη νέου', css_class='btn btn-success')),
         )

@@ -71,11 +71,27 @@ class StockDetailView(LoginRequiredMixin, UpdateView):
         # No need for reverse_lazy here, because it's called inside the method
         return reverse(view_name, kwargs={'pk': self.object.id})
 
-    def get_form(self, *args, **kwargs):
-        form = super(StockDetailView, self).get_form(*args, **kwargs)
-        form.fields['Store'].queryset = Store.objects.filter(code__in=list(self.request.user.groups.all().values_list('id', flat=True)))
-        form.fields['LocationCode'].required = False
-        return form
+    def get_form_kwargs(self):
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+        if hasattr(self, 'object'):
+            kwargs.update({'instance': self.object})
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        form = StockUpdateForm(request.POST, instance=Stock.objects.get(pk=self.kwargs['pk']))
+        if 'delete' in request.POST:
+            if self.request.user.has_perm('inventoryapp.delete_stock'):
+                return redirect('stockdelete', pk=self.kwargs['pk'])
+            else:
+                form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα διαγραφής αποθέματος!")
+        if form.is_valid():
+            if self.request.user.has_perm('inventoryapp.change_stock'):
+                form.save()
+                return redirect('stockdetail', pk=self.kwargs['pk'])
+            else:
+                form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα αλλαγής του αποθέματος!")
+        return render(request, 'stock_detail.html', {'form': form})
 
 
 class StockDeleteView(LoginRequiredMixin, DeleteView):
@@ -102,7 +118,9 @@ class StockCreateView(LoginRequiredMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         form = self.get_form()
-        if form.is_valid():
+        if not self.request.user.has_perm('inventoryapp.add_stock'):
+            form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα προσθήκης αποθέματος!")
+        elif form.is_valid():
             form.save()
             if 'submitandnew' in request.POST:
                 return redirect('stockcreate')

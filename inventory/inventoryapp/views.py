@@ -6,6 +6,7 @@ from dal.widgets import Select
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
+from django.forms import forms, TextInput
 from django.http import request, HttpResponse
 from django.shortcuts import render, redirect
 from django.template import loader
@@ -18,7 +19,7 @@ from django_filters.fields import ModelChoiceField
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from .forms import StockUpdateForm, StockCreateForm, StockSearchForm
+from .forms import StockUpdateForm, StockCreateForm, StockSearchForm, StockPDAUpdateForm, StockPDACreateForm
 from .tables import StockTable
 # Create your views here.
 from .models import Stock, Item, Store
@@ -161,12 +162,78 @@ class ItemAutocomplete(autocomplete.Select2QuerySetView):
 @login_required
 def StockSearch(request):
     template = loader.get_template('stock_search.html')
-    context = {
-        'form': StockSearchForm(request.POST, user=request.user),
-    }
+    form = StockSearchForm(request.POST, user=request.user)
+    if request.method == 'POST':
+        if Item.objects.filter(code=request.POST['item']).exists():
+            try:
+                s = Stock.objects.get(Item__code=request.POST['item'], LocationCode='Άνευ', Store=request.POST['store'])
+            except Stock.DoesNotExist:
+                s = None
+            if not s:
+                return redirect('stockpdacreate')
+            else:
+                return redirect('stockpdadetail', pk=s.pk)
+        else:
+            form.add_error(None, 'Δεν βρέθηκε είδος!')
+    else:
+        form = StockSearchForm(request.POST, user=request.user)
+    context = {'form': form,}
     return HttpResponse(template.render(context, request))
+
+
+class StockPDADetailView(LoginRequiredMixin, UpdateView):
+    model = Stock
+    form_class = StockPDAUpdateForm
+    template_name = "stock_detail.html"
+
+    def get_form_kwargs(self):
+        """Return the keyword arguments for instantiating the form."""
+        kwargs = super().get_form_kwargs()
+        if hasattr(self, 'object'):
+            kwargs.update({'instance': self.object})
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        form = StockPDAUpdateForm(request.POST, instance=Stock.objects.get(pk=self.kwargs['pk']))
+        if not stockstoreopentouser(self.request.user.id, self.kwargs['pk']):
+            form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα στο κατάστημα του αποθέματος!")
+        elif form.is_valid():
+            if self.request.user.has_perm('inventoryapp.change_stock'):
+                form.save()
+                return redirect('searchstock')
+            else:
+                form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα αλλαγής του αποθέματος!")
+        return render(request, 'stock_detail.html', {'form': form})
+
+
+class StockPDACreateView(LoginRequiredMixin, CreateView):
+    model = Stock
+    form_class = StockPDACreateForm
+    success_url = reverse_lazy('index')
+
+    def get_form_kwargs(self):
+        kwargs = super(StockPDACreateView, self).get_form_kwargs()
+        kwargs['initial'] = {'InputUser': self.request.user.id, 'InputDate': datetime.now(), 'LocationCode': 'Άνευ'}
+        return kwargs
+
+    def get_form(self, *args, **kwargs):
+        form = super(StockPDACreateView, self).get_form(*args, **kwargs)
+        form.fields['Store'].queryset = Store.objects.filter(code__in=list(self.request.user.groups.all().values_list('id', flat=True)))
+        form.fields['LocationCode'].required = False
+        return form
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if not self.request.user.has_perm('inventoryapp.add_stock'):
+            form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα προσθήκης αποθέματος!")
+        elif form.is_valid():
+            form.save()
+            return redirect('StockSearch')
+        return render(request, 'inventoryapp/stock_form.html', {'form': form})
 
 
 def logout(request):
     auth.logout(request)
     return redirect('index')
+
+

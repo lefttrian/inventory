@@ -1,5 +1,7 @@
+from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.urls import path
+from django.views.generic import RedirectView
 
 from . import views
 from .views import ItemAutocomplete
@@ -10,6 +12,8 @@ urlpatterns = [
     path('<int:pk>/delete', views.StockDeleteView.as_view(), name='stockdelete'),
     path('item-autocomplete/$', login_required(ItemAutocomplete.as_view()), name='item-autocomplete'),
     path('create', views.StockCreateView.as_view(), name='stockcreate'),
+    path('searchstock', views.StockSearch, name='searchstock'),
+    url(r'^$', RedirectView.as_view(url='/inventory/')),
     #path('<int:question_id>/results/', views.results, name='results'),
     #path('<int:question_id>/vote/', views.vote, name='vote'),
 ]

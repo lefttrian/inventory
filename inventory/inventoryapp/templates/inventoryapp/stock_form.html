@@ -4,6 +4,11 @@
 {% load myapp_tags %}
 {% load crispy_forms_tags %}
 {% block content %}
+<script>
+      $(document).on("dal-element-initialized", function(e) {
+    $(`#${e.detail.element.id}`).select2('open').trigger('focus')
+});
+    </script>
 <div class="container-fluid">
                  <div class="col" id="main">
                         <br>

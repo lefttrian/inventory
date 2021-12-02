@@ -3,12 +3,14 @@ from datetime import datetime
 import django_filters
 from dal import autocomplete
 from dal.widgets import Select
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.http import request
+from django.http import request, HttpResponse
 from django.shortcuts import render, redirect
+from django.template import loader
 from django.urls import reverse, reverse_lazy
-from django.views import generic
+from django.views import generic, View
 from django.views.generic import UpdateView, DeleteView, CreateView
 from django_extensions import auth
 from django_filters import DateFromToRangeFilter, DateRangeFilter, ChoiceFilter, ModelChoiceFilter
@@ -16,7 +18,7 @@ from django_filters.fields import ModelChoiceField
 from django_filters.views import FilterView
 from django_tables2 import SingleTableMixin
 
-from .forms import StockUpdateForm, StockCreateForm
+from .forms import StockUpdateForm, StockCreateForm, StockSearchForm
 from .tables import StockTable
 # Create your views here.
 from .models import Stock, Item, Store
@@ -154,6 +156,15 @@ class ItemAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(searchfield__icontains=self.q)
 
         return qs
+
+
+@login_required
+def StockSearch(request):
+    template = loader.get_template('stock_search.html')
+    context = {
+        'form': StockSearchForm(request.POST, user=request.user),
+    }
+    return HttpResponse(template.render(context, request))
 
 
 def logout(request):

@@ -1,13 +1,13 @@
 from datetime import datetime
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Field, Layout, Button, ButtonHolder
+from crispy_forms.layout import Submit, Field, Layout, Button, ButtonHolder, Row, Column
 from dal import autocomplete
 from django import forms
 from django.template.context_processors import request
 from django.urls import reverse, reverse_lazy
 
-from .models import Stock
+from .models import Stock, Store
 
 
 class StockUpdateForm(forms.ModelForm):
@@ -15,12 +15,13 @@ class StockUpdateForm(forms.ModelForm):
         model = Stock
         fields ='__all__'
         widgets = {
-            'Item': autocomplete.ModelSelect2(url='item-autocomplete', attrs={'data-container-css-class': ''}),
-        }
+            'Item': autocomplete.ModelSelect2(url='item-autocomplete', attrs={'data-container-css-class': '',
+                                                                              'data-minimum-input-length': 3,}) }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.fields['Item'].widget.attrs.update({'autofocus': 'true'})
         # self.helper.form_class = 'form-horizontal'
         # self.helper.label_class = 'col-lg-2'
         # self.helper.field_class = 'col-lg-8'
@@ -39,8 +40,8 @@ class StockCreateForm(forms.ModelForm):
         model = Stock
         fields ='__all__'
         widgets = {
-            'Item': autocomplete.ModelSelect2(url='item-autocomplete', attrs={'data-container-css-class': ''}),
-        }
+            'Item': autocomplete.ModelSelect2(url='item-autocomplete',  attrs={'data-container-css-class': '',
+                                                                              'data-minimum-input-length': 3,}) }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,3 +58,30 @@ class StockCreateForm(forms.ModelForm):
             ButtonHolder(Submit('submit', 'Αποθήκευση', css_class='btn btn-success', readonly=False),
                          Submit('submitandnew', 'Αποθήκευση και προσθήκη νέου', css_class='btn btn-success')),
         )
+        self.fields['Quantity'].widget.attrs.update({'autofocus': 'true'})
+
+
+class StockSearchForm(forms.Form):
+    store = forms.ModelChoiceField(queryset=None, required=False)
+    item = forms.CharField(label='Barcode')
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+
+        self.helper.layout = Layout(
+            Row(
+                Column('item', css_class='form-group'),
+                css_class='form-row'
+            ),Row(
+                Column('store', css_class='form-group'),
+                css_class='form-row'
+            ), Submit('submit', 'Αναζήτηση'))
+        self.fields['item'].widget.attrs.update({'autofocus': True})
+        self.fields['store'].queryset = Store.objects.filter(code__in=list(self.user.groups.all().values_list('id', flat=True)))
+        if self.user.groups.count() == Store.objects.count():
+            self.fields['store'].empty_label = '--------'
+        else:
+            self.fields['store'].empty_label = None

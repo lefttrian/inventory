@@ -77,6 +77,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'inventory.wsgi.application'
 
+STATICFILES_DIRS = (
+    ('inventory/inventoryapp/static/inventoryapp'),
+)
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

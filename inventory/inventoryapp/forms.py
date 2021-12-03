@@ -24,12 +24,12 @@ class StockUpdateForm(forms.ModelForm):
         self.fields['Item'].widget.attrs.update({'autofocus': 'true'})
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
-            Row(Column('Item', css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-            Row(Column('LocationCode', readonly=True, required=False, blank=True, default=' ',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-            Row(Column('Store',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-            Row(Column('Quantity',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-            Row(Column('InputDate', readonly=True,css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-            Row(Column('InputUser', readonly=True,css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column(Field('Item'), css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column(Field('LocationCode', readonly=True, required=False, blank=True, default=' '),css_class='read-only form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column(Field('Store'),css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column(Field('Quantity'),css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column(Field('InputDate', readonly=True),css_class='read-only form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column(Field('InputUser', readonly=True),css_class='read-only form-group col-md-6 mb-0'),css_class='form-row'),
             ButtonHolder(Submit('submit', 'Ενημέρωση'), Submit('delete', 'Διαγραφή', css_class='btn btn-danger'))
         )
 
@@ -45,18 +45,13 @@ class StockCreateForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
-        # self.helper.form_class = 'form-horizontal'
-        # self.helper.label_class = 'col-lg-2'
-        # self.helper.field_class = 'col-lg-8'
-        # self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
-        #self.helper.form_action = reverse('update_stock')
-        self.helper.layout = Layout(Row(Column('Item', css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-                                    Row(Column('LocationCode', readonly=True, required=False, blank=True, default=' ', css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-                                    Row(Column('Store',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-                                    Row(Column('Quantity',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-                                    Row(Column('InputDate', readonly=True, type="hidden",css_class='form-group col-md-6 mb-0'),css_class='form-row'),
-                                    Row(Column('InputUser', readonly=True, type="hidden",css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+        self.helper.layout = Layout(Row(Column(Field('Item'), css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column(Field('LocationCode', readonly=True, required=False, blank=True, default=' '), css_class='read-only form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column(Field('Store'),css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column(Field('Quantity'),css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column(Field('InputDate', readonly=True, type="hidden"),css_class='read-only form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column(Field('InputUser', readonly=True, type="hidden"),css_class='read-only form-group col-md-6 mb-0'),css_class='form-row'),
                                     ButtonHolder(Submit('submit', 'Αποθήκευση', css_class='btn btn-success', readonly=False),
                                      Submit('submitandnew', 'Αποθήκευση και προσθήκη νέου', css_class='btn btn-success')),
         )
@@ -76,13 +71,13 @@ class StockSearchForm(forms.Form):
 
         self.helper.layout = Layout(
             Row(
-                Column('item', css_class='form-group'),
+                Column(Field('item'), css_class='form-group'),
                 css_class='form-row'
             ), Row(
-                Column('store', css_class='form-group'),
+                Column(Field('store'), css_class='form-group'),
                 css_class='form-row'
             ), Row(
-                Column('loc', css_class='form-group'),
+                Column(Field('loc'), css_class='form-group'),
                 css_class='form-row'
             ), Submit('submit', 'Αναζήτηση'))
         self.fields['item'].widget.attrs.update({'autofocus': True})
@@ -104,8 +99,8 @@ class StockPDAUpdateForm(forms.ModelForm):
         self.helper.form_method = 'post'
         #self.helper.form_action = reverse('update_stock')
         self.helper.layout = Layout(
-            Field('Item', readonly=True), Field('LocationCode', readonly=True, default=' '), Field('Store', readonly=True),
-            Field('Quantity'), Field('InputDate', readonly=True), Field('InputUser', readonly=True),
+            Field('Item', readonly=True, css_class='read-only'), Field('LocationCode', readonly=True, default=' ', css_class='read-only'), Field('Store', readonly=True, css_class='read-only'),
+            Field('Quantity'), Field('InputDate', readonly=True, css_class='read-only'), Field('InputUser', readonly=True, css_class='read-only'),
             ButtonHolder(Submit('submit', 'Αποθήκευση και προσθήκη νέου')))
         self.fields['Item'].queryset = Item.objects.filter(id=kwargs['instance'].Item_id)
         self.fields['Quantity'].widget.attrs.update({'autofocus': 'true'})
@@ -121,10 +116,10 @@ class StockPDACreateForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
-            Field('Item', readonly=True), Field('LocationCode', readonly=True),
-            Field('Store', readonly=True),
-            Field('Quantity'), Field('InputDate', readonly=True, type="hidden"),
-            Field('InputUser', readonly=True, type="hidden"),
+            Field('Item', readonly=True, css_class='read-only'), Field('LocationCode', readonly=True, css_class='read-only'),
+            Field('Store', readonly=True, css_class='read-only'),
+            Field('Quantity'), Field('InputDate', readonly=True, type="hidden", css_class='read-only'),
+            Field('InputUser', readonly=True, type="hidden", css_class='read-only'),
             ButtonHolder(Submit('submitandnew', 'Αποθήκευση και προσθήκη νέου', css_class='btn btn-success')))
         self.fields['Quantity'].widget.attrs.update({'autofocus': 'true'})
         self.fields['Item'].empty_label = None

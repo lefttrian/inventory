@@ -16,21 +16,20 @@ class StockUpdateForm(forms.ModelForm):
         fields ='__all__'
         widgets = {
             'Item': autocomplete.ModelSelect2(url='item-autocomplete', attrs={'data-container-css-class': '',
-                                                                              'data-minimum-input-length': 3,}) }
+                                                                              'data-minimum-input-length': 3,})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.fields['Item'].widget.attrs.update({'autofocus': 'true'})
-        # self.helper.form_class = 'form-horizontal'
-        # self.helper.label_class = 'col-lg-2'
-        # self.helper.field_class = 'col-lg-8'
-        # self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
-        #self.helper.form_action = reverse('update_stock')
         self.helper.layout = Layout(
-            Field('Item'), Field('LocationCode', readonly=True, required=False, blank=True, default=' '), Field('Store'),
-            Field('Quantity'), Field('InputDate', readonly=True), Field('InputUser', readonly=True),
+            Row(Column('Item', css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column('LocationCode', readonly=True, required=False, blank=True, default=' ',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column('Store',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column('Quantity',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column('InputDate', readonly=True,css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+            Row(Column('InputUser', readonly=True,css_class='form-group col-md-6 mb-0'),css_class='form-row'),
             ButtonHolder(Submit('submit', 'Ενημέρωση'), Submit('delete', 'Διαγραφή', css_class='btn btn-danger'))
         )
 
@@ -41,7 +40,7 @@ class StockCreateForm(forms.ModelForm):
         fields ='__all__'
         widgets = {
             'Item': autocomplete.ModelSelect2(url='item-autocomplete',  attrs={'data-container-css-class': '',
-                                                                              'data-minimum-input-length': 3,}) }
+                                                                              'data-minimum-input-length': 3,})}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -52,11 +51,14 @@ class StockCreateForm(forms.ModelForm):
         # self.helper.form_class = 'blueForms'
         self.helper.form_method = 'post'
         #self.helper.form_action = reverse('update_stock')
-        self.helper.layout = Layout(
-            Field('Item'), Field('LocationCode', readonly=True, required=False, blank=True, default=' '), Field('Store'),
-            Field('Quantity'), Field('InputDate', readonly=True, type="hidden"), Field('InputUser', readonly=True, type="hidden"),
-            ButtonHolder(Submit('submit', 'Αποθήκευση', css_class='btn btn-success', readonly=False),
-                         Submit('submitandnew', 'Αποθήκευση και προσθήκη νέου', css_class='btn btn-success')),
+        self.helper.layout = Layout(Row(Column('Item', css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column('LocationCode', readonly=True, required=False, blank=True, default=' ', css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column('Store',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column('Quantity',css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column('InputDate', readonly=True, type="hidden",css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    Row(Column('InputUser', readonly=True, type="hidden",css_class='form-group col-md-6 mb-0'),css_class='form-row'),
+                                    ButtonHolder(Submit('submit', 'Αποθήκευση', css_class='btn btn-success', readonly=False),
+                                     Submit('submitandnew', 'Αποθήκευση και προσθήκη νέου', css_class='btn btn-success')),
         )
         self.fields['Quantity'].widget.attrs.update({'autofocus': 'true'})
 
@@ -125,3 +127,4 @@ class StockPDACreateForm(forms.ModelForm):
             Field('InputUser', readonly=True, type="hidden"),
             ButtonHolder(Submit('submitandnew', 'Αποθήκευση και προσθήκη νέου', css_class='btn btn-success')))
         self.fields['Quantity'].widget.attrs.update({'autofocus': 'true'})
+        self.fields['Item'].empty_label = None

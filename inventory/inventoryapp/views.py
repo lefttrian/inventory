@@ -164,13 +164,17 @@ def StockSearch(request):
     template = loader.get_template('stock_search.html')
     form = StockSearchForm(request.POST, user=request.user)
     if request.method == 'POST':
-        if Item.objects.filter(code=request.POST['item']).exists():
+        try:
+            i = Item.objects.get(code=request.POST['item'])
+        except Item.DoesNotExist:
+            i = None
+        if i:
             try:
                 s = Stock.objects.get(Item__code=request.POST['item'], LocationCode='Άνευ', Store=request.POST['store'])
             except Stock.DoesNotExist:
                 s = None
             if not s:
-                return redirect('stockpdacreate')
+                return redirect('stockpdacreate', pk=i.pk)
             else:
                 return redirect('stockpdadetail', pk=s.pk)
         else:
@@ -219,6 +223,7 @@ class StockPDACreateView(LoginRequiredMixin, CreateView):
     def get_form(self, *args, **kwargs):
         form = super(StockPDACreateView, self).get_form(*args, **kwargs)
         form.fields['Store'].queryset = Store.objects.filter(code__in=list(self.request.user.groups.all().values_list('id', flat=True)))
+        form.fields['Item'].queryset = Item.objects.filter(id=self.kwargs['pk'])
         form.fields['LocationCode'].required = False
         return form
 
@@ -228,7 +233,7 @@ class StockPDACreateView(LoginRequiredMixin, CreateView):
             form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα προσθήκης αποθέματος!")
         elif form.is_valid():
             form.save()
-            return redirect('StockSearch')
+            return redirect('searchstock')
         return render(request, 'inventoryapp/stock_form.html', {'form': form})
 
 

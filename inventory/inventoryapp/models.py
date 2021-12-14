@@ -9,6 +9,7 @@ class Item(models.Model):
     code = models.CharField(max_length=25, unique=True)
     description = models.CharField(max_length=500)
     searchfield = models.CharField(max_length=2000)
+    alternativecode = models.CharField(max_length=50)
 
     def __str__(self):
         return self.code+'-'+self.description

@@ -173,10 +173,13 @@ def StockSearch(request):
         try:
             i = Item.objects.get(code=request.POST['item'])
         except Item.DoesNotExist:
-            i = None
+            try:
+                i = Item.objects.get(alternativecode=request.POST['item'])
+            except Item.DoesNotExist:
+                i = None
         if i:
             try:
-                s = Stock.objects.get(Item__code=request.POST['item'], LocationCode='Άνευ', Store=request.POST['store'])
+                s = Stock.objects.get(Item__code=i.code, LocationCode='Άνευ', Store=request.POST['store'])
             except Stock.DoesNotExist:
                 s = None
             if not s:

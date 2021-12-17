@@ -8,7 +8,8 @@ class StockTable(tables.Table):
         'a': {'class': 'btn btn-primary'}
     }, empty_values=(), orderable=False)
 
+
     class Meta:
         model = Stock
-        template_name = "django_tables2/bootstrap.html"
+        template_name = "stock_list_table.html"
         fields = ("Item", "LocationCode", "Store", "Quantity", 'InputDate' )

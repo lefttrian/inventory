@@ -68,6 +68,7 @@ class StockIndexView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = Stock
     table_class = StockTable
     filterset_class = StockFilter
+    table_pagination = {"per_page": 60}
 
     def get_queryset(self):
         super(StockIndexView, self).get_queryset()

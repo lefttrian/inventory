@@ -108,10 +108,11 @@ class StockDetailView(LoginRequiredMixin, UpdateView):
                 return redirect('stockdelete', pk=self.kwargs['pk'])
             else:
                 form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα διαγραφής αποθέματος!")
-        elif form.is_valid():
+        elif 'submit' in request.POST:
             if self.request.user.has_perm('inventoryapp.change_stock'):
-                form.save()
-                return redirect('stockdetail', pk=self.kwargs['pk'])
+                if form.is_valid():
+                    form.save()
+                    return redirect('stockdetail', pk=self.kwargs['pk'])
             else:
                 form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα αλλαγής του αποθέματος!")
         return render(request, 'stock_detail.html', {'form': form})
@@ -211,11 +212,11 @@ class StockPDADetailView(LoginRequiredMixin, UpdateView):
         form = StockPDAUpdateForm(request.POST, instance=Stock.objects.get(pk=self.kwargs['pk']))
         if not stockstoreopentouser(self.request.user.id, self.kwargs['pk']):
             form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα στο κατάστημα του αποθέματος!")
-        elif form.is_valid():
-            if self.request.user.has_perm('inventoryapp.change_stock'):
+        elif self.request.user.has_perm('inventoryapp.change_stock'):
+            if form.is_valid():
                 form.save()
                 return redirect('searchstock')
-            else:
+        else:
                 form.add_error(None, "Ο χρήστης δεν έχει δικαίωμα αλλαγής του αποθέματος!")
         return render(request, 'stock_detail.html', {'form': form})
 
